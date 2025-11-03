@@ -1,7 +1,10 @@
-// Инициализация Telegram Web App
-let tg = window.Telegram.WebApp;
+// Инициализация Telegram
+const tg = window.Telegram.WebApp;
 tg.expand();
 tg.enableClosingConfirmation();
+
+// Конфигурация бота
+const BOT_TOKEN = '8405535827:AAFT8rUZeRUxsv_0_PiwSr25B9UCL2-kE0U';
 
 class ScamHunterGame {
     constructor() {
@@ -15,6 +18,7 @@ class ScamHunterGame {
     init() {
         this.showScreen('loadingScreen');
         this.simulateLoading();
+        this.initTelegramUser();
     }
 
     simulateLoading() {
@@ -32,13 +36,23 @@ class ScamHunterGame {
         }, 100);
     }
 
+    initTelegramUser() {
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            const userInfo = document.getElementById('userInfo');
+            userInfo.innerHTML = `
+                👤 ${user.first_name}${user.username ? ` (@${user.username})` : ''}
+            `;
+        }
+    }
+
     loadPlayerData() {
         const saved = localStorage.getItem('scamHunterData');
         if (saved) {
             return JSON.parse(saved);
         }
         
-        return {
+        const defaultData = {
             totalScore: 0,
             completedCases: [],
             accuracy: 0,
@@ -52,6 +66,9 @@ class ScamHunterGame {
             },
             achievements: []
         };
+        
+        localStorage.setItem('scamHunterData', JSON.stringify(defaultData));
+        return defaultData;
     }
 
     savePlayerData() {
@@ -64,21 +81,6 @@ class ScamHunterGame {
         // Уровни 1-20: Новичок
         for (let i = 1; i <= 20; i++) {
             cases.push(this.createBeginnerCase(i));
-        }
-        
-        // Уровни 21-50: Средний
-        for (let i = 21; i <= 50; i++) {
-            cases.push(this.createIntermediateCase(i));
-        }
-        
-        // Уровни 51-80: Продвинутый
-        for (let i = 51; i <= 80; i++) {
-            cases.push(this.createAdvancedCase(i));
-        }
-        
-        // Уровни 81-100: Эксперт
-        for (let i = 81; i <= 100; i++) {
-            cases.push(this.createExpertCase(i));
         }
         
         return cases;
@@ -107,13 +109,6 @@ class ScamHunterGame {
                                     points: 10,
                                     correct: true,
                                     next_node: "end"
-                                },
-                                {
-                                    text: "🔍 Попросить гарантии",
-                                    feedback: "⚠️ Частично верно. Гарантии важны, но лучше использовать официальные защищенные сервисы.",
-                                    points: 5,
-                                    correct: false,
-                                    next_node: "end"
                                 }
                             ]
                         }
@@ -121,7 +116,7 @@ class ScamHunterGame {
                 }
             },
             {
-                title: "Фишинговая ссылка",
+                title: "Фишинговая ссылка", 
                 dialogue: {
                     start: "node_1",
                     nodes: {
@@ -141,13 +136,6 @@ class ScamHunterGame {
                                     points: 12,
                                     correct: true,
                                     next_node: "end"
-                                },
-                                {
-                                    text: "❌ Проигнорировать",
-                                    feedback: "✅ Правильно! Игнорирование подозрительных сообщений - лучшая защита.",
-                                    points: 8,
-                                    correct: true,
-                                    next_node: "end"
                                 }
                             ]
                         }
@@ -165,102 +153,6 @@ class ScamHunterGame {
         };
     }
 
-    createIntermediateCase(id) {
-        return {
-            id: `case_${id}`,
-            title: "Фейковый гарант",
-            difficulty: "intermediate",
-            dialogue: {
-                start: "node_1",
-                nodes: {
-                    "node_1": {
-                        question: "Продавец предлагает использовать 'проверенного гаранта' @super_garant с рейтингом 4.9. Гарант просит перевести деньги на его кошелек для 'безопасного хранения'. Ваш ход?",
-                        choices: [
-                            {
-                                text: "✅ Довериться гаранту",
-                                feedback: "❌ Осторожно! Фейковые гаранты - распространенная схема. Проверяйте официальные каналы сервиса.",
-                                points: 0,
-                                correct: false,
-                                next_node: "end"
-                            },
-                            {
-                                text: "🔍 Проверить аккаунт гаранта",
-                                feedback: "✅ Правильно! Всегда проверяйте: дату регистрации, отзывы, официальные контакты.",
-                                points: 15,
-                                correct: true,
-                                next_node: "end"
-                            }
-                        ]
-                    }
-                }
-            }
-        };
-    }
-
-    createAdvancedCase(id) {
-        return {
-            id: `case_${id}`,
-            title: "Социальная инженерия",
-            difficulty: "advanced",
-            dialogue: {
-                start: "node_1",
-                nodes: {
-                    "node_1": {
-                        question: "Вам звонит 'сотрудник банка'. Он называет ваши полные данные и говорит о подозрительной операции. Для 'безопасности' просит сообщить код из SMS. Что делаете?",
-                        choices: [
-                            {
-                                text: "📞 Назвать код",
-                                feedback: "❌ Критическая ошибка! Это код подтверждения операции. Мошенник украдет ваши деньги.",
-                                points: 0,
-                                correct: false,
-                                next_node: "end"
-                            },
-                            {
-                                text: "🚫 Прервать звонок",
-                                feedback: "✅ Правильно! Никогда не сообщайте коды из SMS. Перезвоните в банк по официальному номеру.",
-                                points: 25,
-                                correct: true,
-                                next_node: "end"
-                            }
-                        ]
-                    }
-                }
-            }
-        };
-    }
-
-    createExpertCase(id) {
-        return {
-            id: `case_${id}`,
-            title: "Многоуровневая атака",
-            difficulty: "expert",
-            dialogue: {
-                start: "node_1",
-                nodes: {
-                    "node_1": {
-                        question: "Вы участвуете в сложной сделке с недвижимостью. 'Риелтор' прислал подделанные документы, 'банковский сотрудник' подтверждает сделку по телефону. Ваши действия?",
-                        choices: [
-                            {
-                                text: "🔄 Проверить все контакты",
-                                feedback: "✅ Верно! При сложных сделках проверяйте каждого участника через официальные каналы.",
-                                points: 30,
-                                correct: true,
-                                next_node: "end"
-                            },
-                            {
-                                text: "⚡ Довериться специалистам",
-                                feedback: "❌ Опасно! Сложные мошеннические схемы используют множество участников для создания видимости легальности.",
-                                points: 0,
-                                correct: false,
-                                next_node: "end"
-                            }
-                        ]
-                    }
-                }
-            }
-        };
-    }
-
     showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(screen => {
             screen.classList.remove('active');
@@ -274,18 +166,15 @@ class ScamHunterGame {
     }
 
     updatePlayerStats() {
-        // Обновление основной статистики
         document.getElementById('totalScore').textContent = this.playerData.totalScore;
         document.getElementById('accuracy').textContent = `${this.playerData.accuracy}%`;
         document.getElementById('streak').textContent = this.playerData.currentStreak;
 
-        // Прогресс бар
         const completed = this.playerData.completedCases.length;
         const progress = (completed / 100) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
         document.getElementById('progressText').textContent = `${completed}/100`;
 
-        // Бейдж игрока
         this.updatePlayerBadge();
     }
 
@@ -293,13 +182,9 @@ class ScamHunterGame {
         const completed = this.playerData.completedCases.length;
         let badge = { emoji: '🟢', text: 'Новичок' };
 
-        if (completed >= 71) {
-            badge = { emoji: '🔴', text: 'Мастер' };
-        } else if (completed >= 31) {
-            badge = { emoji: '🟣', text: 'Эксперт' };
-        } else if (completed >= 11) {
-            badge = { emoji: '🔵', text: 'Детектив' };
-        }
+        if (completed >= 71) badge = { emoji: '🔴', text: 'Мастер' };
+        else if (completed >= 31) badge = { emoji: '🟣', text: 'Эксперт' };
+        else if (completed >= 11) badge = { emoji: '🔵', text: 'Детектив' };
 
         document.querySelector('.badge-emoji').textContent = badge.emoji;
         document.querySelector('.badge-text').textContent = badge.text;
@@ -338,7 +223,7 @@ class ScamHunterGame {
     getDifficultyText(difficulty) {
         const texts = {
             'beginner': 'Новичок',
-            'intermediate': 'Средний',
+            'intermediate': 'Средний', 
             'advanced': 'Продв.',
             'expert': 'Эксперт'
         };
@@ -356,22 +241,18 @@ class ScamHunterGame {
         if (!this.currentCase || !this.currentNode) return;
 
         const node = this.currentCase.dialogue.nodes[this.currentNode];
-        
-        // Обновление заголовка
         const caseIndex = this.cases.findIndex(c => c.id === this.currentCase.id) + 1;
+        
         document.getElementById('caseTitle').textContent = this.currentCase.title;
         document.getElementById('caseDifficulty').textContent = this.getDifficultyText(this.currentCase.difficulty);
         document.getElementById('caseDifficulty').className = `difficulty-badge difficulty-${this.currentCase.difficulty}`;
         document.getElementById('caseNumber').textContent = `#${caseIndex}`;
-
-        // Обновление диалога
         document.getElementById('dialogueText').textContent = node.question;
 
-        // Очистка и создание вариантов ответа
         const choicesContainer = document.getElementById('choicesContainer');
         choicesContainer.innerHTML = '';
 
-        node.choices.forEach((choice, index) => {
+        node.choices.forEach((choice) => {
             const button = document.createElement('button');
             button.className = 'choice-btn';
             button.textContent = choice.text;
@@ -379,20 +260,14 @@ class ScamHunterGame {
             choicesContainer.appendChild(button);
         });
 
-        // Скрытие фидбека
-        document.getElementById('feedbackContainer').classList.add('hidden');
-        
-        // Обновление текущих статов
+        document.getElementById('feedbackContainer').classList.remove('show');
         this.updateCurrentGameStats();
     }
 
     makeChoice(choice) {
         this.showFeedback(choice);
-        
-        // Обновление статистики игрока
         this.updatePlayerStatsAfterChoice(choice);
         
-        // Продолжение или завершение кейса
         if (choice.next_node && choice.next_node !== 'end') {
             setTimeout(() => {
                 this.currentNode = choice.next_node;
@@ -410,7 +285,6 @@ class ScamHunterGame {
         const feedbackContainer = document.getElementById('feedbackContainer');
         const feedbackContent = feedbackContainer.querySelector('.feedback-content');
         
-        // Установка класса в зависимости от правильности ответа
         feedbackContent.className = 'feedback-content ';
         if (choice.correct) {
             feedbackContent.classList.add('correct');
@@ -420,21 +294,16 @@ class ScamHunterGame {
             feedbackContent.classList.add('incorrect');
         }
 
-        // Установка контента
-        document.getElementById('feedbackIcon').textContent = choice.correct ? '✅' : choice.points > 0 ? '⚠️' : '❌';
-        document.getElementById('feedbackTitle').textContent = choice.correct ? 'Правильно!' : choice.points > 0 ? 'Частично верно' : 'Ошибка';
+        document.getElementById('feedbackIcon').textContent = choice.correct ? '✅' : '❌';
+        document.getElementById('feedbackTitle').textContent = choice.correct ? 'Правильно!' : 'Ошибка';
         document.getElementById('feedbackText').textContent = choice.feedback;
 
-        // Показ фидбека
-        feedbackContainer.classList.remove('hidden');
         feedbackContainer.classList.add('show');
     }
 
     updatePlayerStatsAfterChoice(choice) {
-        // Обновление очков
         this.playerData.totalScore += choice.points;
 
-        // Обновление серии
         if (choice.correct) {
             this.playerData.currentStreak++;
             this.playerData.maxStreak = Math.max(this.playerData.maxStreak, this.playerData.currentStreak);
@@ -454,11 +323,8 @@ class ScamHunterGame {
     completeCase() {
         if (this.currentCase && !this.playerData.completedCases.includes(this.currentCase.id)) {
             this.playerData.completedCases.push(this.currentCase.id);
-            
-            // Обновление статистики по сложности
             const difficulty = this.currentCase.difficulty;
             this.playerData.stats[difficulty].completed++;
-            
             this.savePlayerData();
         }
     }
@@ -472,11 +338,6 @@ class ScamHunterGame {
         const stats = this.playerData.stats;
         const completed = this.playerData.completedCases.length;
         
-        // Расчет точности (упрощенный)
-        const totalChoices = completed * 2;
-        const correctChoices = Math.floor(totalChoices * (this.playerData.accuracy / 100));
-        this.playerData.accuracy = totalChoices > 0 ? Math.round((correctChoices / totalChoices) * 100) : 0;
-
         document.getElementById('statTotalScore').textContent = this.playerData.totalScore;
         document.getElementById('statCasesCompleted').textContent = completed;
         document.getElementById('statAccuracy').textContent = `${this.playerData.accuracy}%`;
@@ -498,9 +359,7 @@ class ScamHunterGame {
             { id: 'first_case', name: 'Первый кейс', desc: 'Пройдите первый кейс', icon: '🎮' },
             { id: 'beginner_master', name: 'Мастер новичка', desc: 'Пройдите все кейсы для новичков', icon: '🟢' },
             { id: 'streak_5', name: 'Серия побед', desc: '5 правильных ответов подряд', icon: '🔥' },
-            { id: 'detective', name: 'Детектив', desc: 'Пройдите 30 кейсов', icon: '🔍' },
-            { id: 'expert', name: 'Эксперт', desc: 'Пройдите 50 кейсов', icon: '🎓' },
-            { id: 'master', name: 'Мастер', desc: 'Пройдите все 100 кейсов', icon: '🏆' }
+            { id: 'detective', name: 'Детектив', desc: 'Пройдите 30 кейсов', icon: '🔍' }
         ];
 
         const grid = document.getElementById('achievementsGrid');
@@ -532,48 +391,13 @@ class ScamHunterGame {
             case 'beginner_master': return this.playerData.stats.beginner.completed >= 20;
             case 'streak_5': return this.playerData.maxStreak >= 5;
             case 'detective': return completed >= 30;
-            case 'expert': return completed >= 50;
-            case 'master': return completed >= 100;
             default: return false;
         }
     }
-}
 
-// Глобальные функции для вызова из HTML
-let game;
-
-function startGame() {
-    const availableCases = game.cases.filter(caseItem => 
-        !game.playerData.completedCases.includes(caseItem.id)
-    );
-    
-    if (availableCases.length > 0) {
-        game.startCase(availableCases[0]);
-    } else {
-        alert('🎉 Поздравляем! Вы прошли все кейсы!');
-    }
-}
-
-function showScreen(screenId) {
-    switch(screenId) {
-        case 'mainMenu':
-            game.showMainMenu();
-            break;
-        case 'casesScreen':
-            game.showCasesScreen();
-            break;
-        case 'statsScreen':
-            game.showStatsScreen();
-            break;
-        case 'achievementsScreen':
-            game.showAchievementsScreen();
-            break;
-        default:
-            game.showScreen(screenId);
-    }
-}
-
-// Инициализация игры при загрузке
-document.addEventListener('DOMContentLoaded', () => {
-    game = new ScamHunterGame();
-});
+    async shareResults() {
+        const user = tg.initDataUnsafe?.user;
+        const message = `🕵️‍♂️ <b>Мой результат в Scam Hunter!</b>\n\n` +
+                       `👤 Игрок: ${user?.first_name || 'Аноним'}\n` +
+                       `🏆 Очки: ${this.playerData.totalScore}\n` +
+                       `📊 Пройдено кейсов: ${this.playerData.completedCases.length}/
