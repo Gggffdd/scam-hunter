@@ -8,114 +8,229 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app">
+    <div class="app-container">
         <!-- Экран загрузки -->
         <div id="loadingScreen" class="screen active">
-            <div class="loading-container">
-                <div class="logo">🕵️‍♂️ Scam Hunter</div>
-                <div class="loading-bar">
-                    <div class="loading-progress"></div>
+            <div class="loading-content">
+                <div class="loader">
+                    <div class="loader-icon">🕵️‍♂️</div>
+                    <h1 class="game-title">Scam Hunter</h1>
+                    <p class="loading-subtitle">Загружаем кейсы мошенничества...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="loadingProgress"></div>
+                    </div>
                 </div>
-                <div class="loading-text">Загружаем кейсы мошенничества...</div>
             </div>
         </div>
 
         <!-- Главное меню -->
         <div id="mainMenu" class="screen">
-            <div class="header">
-                <h1>🕵️‍♂️ Scam Hunter</h1>
-                <div class="player-stats">
-                    <div class="stat">🏆 <span id="totalScore">0</span></div>
-                    <div class="stat">📊 <span id="accuracy">0%</span></div>
-                    <div class="stat">🔥 <span id="streak">0</span></div>
+            <div class="menu-header">
+                <div class="header-content">
+                    <h1 class="main-title">🕵️‍♂️ Scam Hunter</h1>
+                    <p class="subtitle">Стань детективом мошенничества</p>
                 </div>
             </div>
-            
+
             <div class="menu-content">
-                <div class="player-badge" id="playerBadge">
-                    <span class="badge-icon">🟢</span>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalScore">0</div>
+                            <div class="stat-label">Очки</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="accuracy">0%</div>
+                            <div class="stat-label">Точность</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="streak">0</div>
+                            <div class="stat-label">Серия</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-badge">
+                    <span class="badge-emoji">🟢</span>
                     <span class="badge-text">Новичок</span>
                 </div>
-                
-                <div class="menu-buttons">
-                    <button class="btn-primary" onclick="startNewGame()">🎮 Начать игру</button>
-                    <button class="btn-secondary" onclick="showCases()">📚 Библиотека кейсов</button>
-                    <button class="btn-secondary" onclick="showStats()">📊 Статистика</button>
-                    <button class="btn-secondary" onclick="showAchievements()">🏆 Достижения</button>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="startGame()">
+                        <span class="btn-icon">🎮</span>
+                        Начать игру
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('casesScreen')">
+                        <span class="btn-icon">📚</span>
+                        Библиотека кейсов
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('statsScreen')">
+                        <span class="btn-icon">📊</span>
+                        Статистика
+                    </button>
+                    <button class="btn btn-secondary" onclick="showScreen('achievementsScreen')">
+                        <span class="btn-icon">🏆</span>
+                        Достижения
+                    </button>
                 </div>
-                
+
                 <div class="progress-section">
-                    <h3>Прогресс игры</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+                    <div class="progress-header">
+                        <span>Прогресс игры</span>
+                        <span class="progress-text" id="progressText">0/100</span>
                     </div>
-                    <div class="progress-text">Пройдено: <span id="progressText">0/100</span> кейсов</div>
+                    <div class="progress-bar large">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Экран выбора кейса -->
+        <!-- Экран кейсов -->
         <div id="casesScreen" class="screen">
-            <div class="header">
-                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
-                <h2>📚 Библиотека кейсов</h2>
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('mainMenu')">
+                    <span>←</span>
+                </button>
+                <h2 class="screen-title">📚 Библиотека кейсов</h2>
+                <div class="header-spacer"></div>
             </div>
-            <div class="cases-grid" id="casesGrid"></div>
+            <div class="cases-container">
+                <div class="cases-grid" id="casesGrid">
+                    <!-- Кейсы будут загружены здесь -->
+                </div>
+            </div>
         </div>
 
         <!-- Игровой экран -->
         <div id="gameScreen" class="screen">
             <div class="game-header">
-                <div class="case-info">
-                    <h3 id="caseTitle">Загрузка кейса...</h3>
-                    <div class="case-difficulty" id="caseDifficulty"></div>
+                <div class="case-header">
+                    <button class="back-btn small" onclick="showScreen('mainMenu')">
+                        <span>←</span>
+                    </button>
+                    <div class="case-info">
+                        <h3 class="case-title" id="caseTitle">Загрузка кейса...</h3>
+                        <div class="case-meta">
+                            <span class="difficulty-badge" id="caseDifficulty">Новичок</span>
+                            <span class="case-number" id="caseNumber">#1</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="game-stats">
-                    <div class="score">Очки: <span id="currentScore">0</span></div>
-                    <div class="streak">Серия: <span id="currentStreak">0</span></div>
+                    <div class="game-stat">
+                        <span class="stat-label">Очки:</span>
+                        <span class="stat-value" id="currentScore">0</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-label">Серия:</span>
+                        <span class="stat-value" id="currentStreak">0</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="dialogue-container">
-                <div class="dialogue-message" id="dialogueText"></div>
-                <div class="choices-container" id="choicesContainer"></div>
+
+            <div class="game-content">
+                <div class="dialogue-card">
+                    <div class="message-content">
+                        <div class="message-text" id="dialogueText">
+                            Загрузка диалога...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="choices-container" id="choicesContainer">
+                    <!-- Варианты ответов будут здесь -->
+                </div>
+
+                <div class="feedback-card hidden" id="feedbackContainer">
+                    <div class="feedback-content">
+                        <div class="feedback-header">
+                            <span class="feedback-icon" id="feedbackIcon">💡</span>
+                            <span class="feedback-title" id="feedbackTitle">Результат</span>
+                        </div>
+                        <div class="feedback-text" id="feedbackText">
+                            Обратная связь появится здесь...
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="feedback-container" id="feedbackContainer"></div>
         </div>
 
         <!-- Экран статистики -->
         <div id="statsScreen" class="screen">
-            <div class="header">
-                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
-                <h2>📊 Статистика</h2>
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('mainMenu')">
+                    <span>←</span>
+                </button>
+                <h2 class="screen-title">📊 Статистика</h2>
+                <div class="header-spacer"></div>
             </div>
             <div class="stats-container">
-                <div class="stat-card">
-                    <h3>Общая статистика</h3>
-                    <div class="stat-item">Всего очков: <span id="statTotalScore">0</span></div>
-                    <div class="stat-item">Пройдено кейсов: <span id="statCasesCompleted">0</span></div>
-                    <div class="stat-item">Точность: <span id="statAccuracy">0%</span></div>
-                    <div class="stat-item">Макс. серия: <span id="statMaxStreak">0</span></div>
-                </div>
-                
-                <div class="stat-card">
-                    <h3>Распределение по сложности</h3>
-                    <div class="stat-item">Новичок: <span id="statBeginner">0</span></div>
-                    <div class="stat-item">Средний: <span id="statIntermediate">0</span></div>
-                    <div class="stat-item">Продвинутый: <span id="statAdvanced">0</span></div>
-                    <div class="stat-item">Эксперт: <span id="statExpert">0</span></div>
+                <div class="stats-grid">
+                    <div class="stat-section">
+                        <h3 class="section-title">Общая статистика</h3>
+                        <div class="stat-item">
+                            <span class="stat-name">Всего очков</span>
+                            <span class="stat-value" id="statTotalScore">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Пройдено кейсов</span>
+                            <span class="stat-value" id="statCasesCompleted">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Точность ответов</span>
+                            <span class="stat-value" id="statAccuracy">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Макс. серия</span>
+                            <span class="stat-value" id="statMaxStreak">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-section">
+                        <h3 class="section-title">По сложности</h3>
+                        <div class="stat-item">
+                            <span class="stat-name">🟢 Новичок</span>
+                            <span class="stat-value" id="statBeginner">0/20</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🟡 Средний</span>
+                            <span class="stat-value" id="statIntermediate">0/30</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🔴 Продвинутый</span>
+                            <span class="stat-value" id="statAdvanced">0/30</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🟣 Эксперт</span>
+                            <span class="stat-value" id="statExpert">0/20</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Экран достижений -->
         <div id="achievementsScreen" class="screen">
-            <div class="header">
-                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
-                <h2>🏆 Достижения</h2>
+            <div class="screen-header">
+                <button class="back-btn" onclick="showScreen('mainMenu')">
+                    <span>←</span>
+                </button>
+                <h2 class="screen-title">🏆 Достижения</h2>
+                <div class="header-spacer"></div>
             </div>
-            <div class="achievements-grid" id="achievementsGrid"></div>
+            <div class="achievements-container">
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Достижения будут здесь -->
+                </div>
+            </div>
         </div>
     </div>
 
