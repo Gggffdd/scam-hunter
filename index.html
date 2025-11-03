@@ -1147,4 +1147,436 @@
                                         feedback: "✅ Правильно! Всегда проверяйте: дату регистрации, отзывы, официальные контакты.",
                                         points: 15,
                                         correct: true,
-                                        next
+                                        next_node: "end"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+            }
+
+            createAdvancedCase(id) {
+                return {
+                    id: `case_${id}`,
+                    title: "Социальная инженерия",
+                    difficulty: "advanced",
+                    dialogue: {
+                        start: "node_1",
+                        nodes: {
+                            "node_1": {
+                                question: "Вам звонит 'сотрудник банка'. Он называет ваши полные данные и говорит о подозрительной операции. Для 'безопасности' просит сообщить код из SMS. Что делаете?",
+                                choices: [
+                                    {
+                                        text: "📞 Назвать код",
+                                        feedback: "❌ Критическая ошибка! Это код подтверждения операции. Мошенник украдет ваши деньги.",
+                                        points: 0,
+                                        correct: false,
+                                        next_node: "end"
+                                    },
+                                    {
+                                        text: "🚫 Прервать звонок",
+                                        feedback: "✅ Правильно! Никогда не сообщайте коды из SMS. Перезвоните в банк по официальному номеру.",
+                                        points: 25,
+                                        correct: true,
+                                        next_node: "end"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+            }
+
+            createExpertCase(id) {
+                return {
+                    id: `case_${id}`,
+                    title: "Многоуровневая атака",
+                    difficulty: "expert",
+                    dialogue: {
+                        start: "node_1",
+                        nodes: {
+                            "node_1": {
+                                question: "Вы участвуете в сложной сделке с недвижимостью. 'Риелтор' прислал подделанные документы, 'банковский сотрудник' подтверждает сделку по телефону. Ваши действия?",
+                                choices: [
+                                    {
+                                        text: "🔄 Проверить все контакты",
+                                        feedback: "✅ Верно! При сложных сделках проверяйте каждого участника через официальные каналы.",
+                                        points: 30,
+                                        correct: true,
+                                        next_node: "end"
+                                    },
+                                    {
+                                        text: "⚡ Довериться специалистам",
+                                        feedback: "❌ Опасно! Сложные мошеннические схемы используют множество участников для создания видимости легальности.",
+                                        points: 0,
+                                        correct: false,
+                                        next_node: "end"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                };
+            }
+
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                document.getElementById(screenId).classList.add('active');
+            }
+
+            showMainMenu() {
+                this.updatePlayerStats();
+                this.showScreen('mainMenu');
+            }
+
+            updatePlayerStats() {
+                document.getElementById('totalScore').textContent = this.playerData.totalScore;
+                document.getElementById('accuracy').textContent = `${this.playerData.accuracy}%`;
+                document.getElementById('streak').textContent = this.playerData.currentStreak;
+
+                const completed = this.playerData.completedCases.length;
+                const progress = (completed / 100) * 100;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+                document.getElementById('progressText').textContent = `${completed}/100`;
+
+                this.updatePlayerBadge();
+            }
+
+            updatePlayerBadge() {
+                const completed = this.playerData.completedCases.length;
+                let badge = { emoji: '🟢', text: 'Новичок' };
+
+                if (completed >= 71) {
+                    badge = { emoji: '🔴', text: 'Мастер' };
+                } else if (completed >= 31) {
+                    badge = { emoji: '🟣', text: 'Эксперт' };
+                } else if (completed >= 11) {
+                    badge = { emoji: '🔵', text: 'Детектив' };
+                }
+
+                document.querySelector('.badge-emoji').textContent = badge.emoji;
+                document.querySelector('.badge-text').textContent = badge.text;
+            }
+
+            startGame() {
+                const availableCases = this.cases.filter(caseItem => 
+                    !this.playerData.completedCases.includes(caseItem.id)
+                );
+                
+                if (availableCases.length > 0) {
+                    this.startCase(availableCases[0]);
+                } else {
+                    tg.showPopup({
+                        title: 'Поздравляем! 🎉',
+                        message: 'Вы прошли все кейсы!',
+                        buttons: [{ type: 'ok' }]
+                    });
+                }
+            }
+
+            showCasesScreen() {
+                this.showScreen('casesScreen');
+                this.renderCasesGrid();
+            }
+
+            renderCasesGrid() {
+                const grid = document.getElementById('casesGrid');
+                grid.innerHTML = '';
+
+                this.cases.forEach((caseItem, index) => {
+                    const isCompleted = this.playerData.completedCases.includes(caseItem.id);
+                    const isLocked = index > 0 && !this.playerData.completedCases.includes(this.cases[index - 1].id);
+
+                    const caseElement = document.createElement('div');
+                    caseElement.className = `case-item ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+                    caseElement.innerHTML = `
+                        <div class="case-number">${index + 1}</div>
+                        <div class="case-difficulty difficulty-${caseItem.difficulty}">
+                            ${this.getDifficultyText(caseItem.difficulty)}
+                        </div>
+                    `;
+
+                    if (!isLocked) {
+                        caseElement.addEventListener('click', () => this.startCase(caseItem));
+                    }
+
+                    grid.appendChild(caseElement);
+                });
+            }
+
+            getDifficultyText(difficulty) {
+                const texts = {
+                    'beginner': 'Новичок',
+                    'intermediate': 'Средний',
+                    'advanced': 'Продв.',
+                    'expert': 'Эксперт'
+                };
+                return texts[difficulty] || difficulty;
+            }
+
+            startCase(caseItem) {
+                this.currentCase = caseItem;
+                this.currentNode = caseItem.dialogue.start;
+                this.showScreen('gameScreen');
+                this.updateGameUI();
+            }
+
+            updateGameUI() {
+                if (!this.currentCase || !this.currentNode) return;
+
+                const node = this.currentCase.dialogue.nodes[this.currentNode];
+                const caseIndex = this.cases.findIndex(c => c.id === this.currentCase.id) + 1;
+                
+                document.getElementById('caseTitle').textContent = this.currentCase.title;
+                document.getElementById('caseDifficulty').textContent = this.getDifficultyText(this.currentCase.difficulty);
+                document.getElementById('caseDifficulty').className = `difficulty-badge difficulty-${this.currentCase.difficulty}`;
+                document.getElementById('caseNumber').textContent = `#${caseIndex}`;
+                document.getElementById('dialogueText').textContent = node.question;
+
+                const choicesContainer = document.getElementById('choicesContainer');
+                choicesContainer.innerHTML = '';
+
+                node.choices.forEach((choice) => {
+                    const button = document.createElement('button');
+                    button.className = 'choice-btn';
+                    button.textContent = choice.text;
+                    button.addEventListener('click', () => this.makeChoice(choice));
+                    choicesContainer.appendChild(button);
+                });
+
+                document.getElementById('feedbackContainer').classList.add('hidden');
+                this.updateCurrentGameStats();
+            }
+
+            makeChoice(choice) {
+                this.showFeedback(choice);
+                this.updatePlayerStatsAfterChoice(choice);
+                
+                if (choice.next_node && choice.next_node !== 'end') {
+                    setTimeout(() => {
+                        this.currentNode = choice.next_node;
+                        this.updateGameUI();
+                    }, 3000);
+                } else {
+                    setTimeout(() => {
+                        this.completeCase();
+                        this.showMainMenu();
+                    }, 3000);
+                }
+            }
+
+            showFeedback(choice) {
+                const feedbackContainer = document.getElementById('feedbackContainer');
+                const feedbackContent = document.getElementById('feedbackContent');
+                
+                feedbackContent.className = 'feedback-content';
+                if (choice.correct) {
+                    feedbackContent.classList.add('correct');
+                } else if (choice.points > 0) {
+                    feedbackContent.classList.add('partial');
+                } else {
+                    feedbackContent.classList.add('incorrect');
+                }
+
+                document.getElementById('feedbackIcon').textContent = choice.correct ? '✅' : choice.points > 0 ? '⚠️' : '❌';
+                document.getElementById('feedbackTitle').textContent = choice.correct ? 'Правильно!' : choice.points > 0 ? 'Частично верно' : 'Ошибка';
+                document.getElementById('feedbackText').textContent = choice.feedback;
+
+                feedbackContainer.classList.remove('hidden');
+                feedbackContainer.classList.add('show');
+            }
+
+            updatePlayerStatsAfterChoice(choice) {
+                this.playerData.totalScore += choice.points;
+
+                if (choice.correct) {
+                    this.playerData.currentStreak++;
+                    this.playerData.maxStreak = Math.max(this.playerData.maxStreak, this.playerData.currentStreak);
+                } else {
+                    this.playerData.currentStreak = 0;
+                }
+
+                this.savePlayerData();
+                this.updateCurrentGameStats();
+            }
+
+            updateCurrentGameStats() {
+                document.getElementById('currentScore').textContent = this.playerData.totalScore;
+                document.getElementById('currentStreak').textContent = this.playerData.currentStreak;
+            }
+
+            completeCase() {
+                if (this.currentCase && !this.playerData.completedCases.includes(this.currentCase.id)) {
+                    this.playerData.completedCases.push(this.currentCase.id);
+                    const difficulty = this.currentCase.difficulty;
+                    this.playerData.stats[difficulty].completed++;
+                    
+                    if (choice.correct) {
+                        this.playerData.stats[difficulty].correct++;
+                    }
+                    
+                    // Обновляем точность
+                    const totalCompleted = Object.values(this.playerData.stats).reduce((sum, stat) => sum + stat.completed, 0);
+                    const totalCorrect = Object.values(this.playerData.stats).reduce((sum, stat) => sum + stat.correct, 0);
+                    this.playerData.accuracy = totalCompleted > 0 ? Math.round((totalCorrect / totalCompleted) * 100) : 0;
+                    
+                    this.savePlayerData();
+                    
+                    // Проверяем достижения
+                    this.checkAchievements();
+                }
+            }
+
+            showStatsScreen() {
+                this.showScreen('statsScreen');
+                this.updateStatsDisplay();
+            }
+
+            updateStatsDisplay() {
+                const stats = this.playerData.stats;
+                const completed = this.playerData.completedCases.length;
+                
+                document.getElementById('statTotalScore').textContent = this.playerData.totalScore;
+                document.getElementById('statCasesCompleted').textContent = completed;
+                document.getElementById('statAccuracy').textContent = `${this.playerData.accuracy}%`;
+                document.getElementById('statMaxStreak').textContent = this.playerData.maxStreak;
+
+                document.getElementById('statBeginner').textContent = `${stats.beginner.completed}/20`;
+                document.getElementById('statIntermediate').textContent = `${stats.intermediate.completed}/30`;
+                document.getElementById('statAdvanced').textContent = `${stats.advanced.completed}/30`;
+                document.getElementById('statExpert').textContent = `${stats.expert.completed}/20`;
+            }
+
+            showAchievementsScreen() {
+                this.showScreen('achievementsScreen');
+                this.renderAchievements();
+            }
+
+            renderAchievements() {
+                const achievements = [
+                    { id: 'first_case', name: 'Первый кейс', desc: 'Пройдите первый кейс', icon: '🎮' },
+                    { id: 'beginner_master', name: 'Мастер новичка', desc: 'Пройдите все кейсы для новичков', icon: '🟢' },
+                    { id: 'streak_5', name: 'Серия побед', desc: '5 правильных ответов подряд', icon: '🔥' },
+                    { id: 'detective', name: 'Детектив', desc: 'Пройдите 30 кейсов', icon: '🔍' },
+                    { id: 'expert', name: 'Эксперт', desc: 'Пройдите 50 кейсов', icon: '🎓' },
+                    { id: 'master', name: 'Мастер', desc: 'Пройдите все 100 кейсов', icon: '🏆' }
+                ];
+
+                const grid = document.getElementById('achievementsGrid');
+                grid.innerHTML = '';
+
+                achievements.forEach(achievement => {
+                    const isUnlocked = this.checkAchievementUnlocked(achievement.id);
+                    
+                    const achievementElement = document.createElement('div');
+                    achievementElement.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+                    achievementElement.innerHTML = `
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-info">
+                            <div class="achievement-name">${achievement.name}</div>
+                            <div class="achievement-desc">${achievement.desc}</div>
+                        </div>
+                        <div class="achievement-status">${isUnlocked ? '✅' : '🔒'}</div>
+                    `;
+                    
+                    grid.appendChild(achievementElement);
+                });
+            }
+
+            checkAchievementUnlocked(achievementId) {
+                const completed = this.playerData.completedCases.length;
+                
+                switch(achievementId) {
+                    case 'first_case': return completed >= 1;
+                    case 'beginner_master': return this.playerData.stats.beginner.completed >= 20;
+                    case 'streak_5': return this.playerData.maxStreak >= 5;
+                    case 'detective': return completed >= 30;
+                    case 'expert': return completed >= 50;
+                    case 'master': return completed >= 100;
+                    default: return false;
+                }
+            }
+
+            checkAchievements() {
+                const achievements = ['first_case', 'beginner_master', 'streak_5', 'detective', 'expert', 'master'];
+                let newAchievements = [];
+
+                achievements.forEach(achievementId => {
+                    if (this.checkAchievementUnlocked(achievementId) && !this.playerData.achievements.includes(achievementId)) {
+                        this.playerData.achievements.push(achievementId);
+                        newAchievements.push(achievementId);
+                    }
+                });
+
+                if (newAchievements.length > 0) {
+                    this.savePlayerData();
+                    this.showAchievementPopup(newAchievements);
+                }
+            }
+
+            showAchievementPopup(achievementIds) {
+                const achievementNames = {
+                    'first_case': 'Первый кейс',
+                    'beginner_master': 'Мастер новичка', 
+                    'streak_5': 'Серия побед',
+                    'detective': 'Детектив',
+                    'expert': 'Эксперт',
+                    'master': 'Мастер'
+                };
+
+                const message = achievementIds.map(id => `🏆 ${achievementNames[id]}`).join('\n');
+                
+                tg.showPopup({
+                    title: '🎉 Новое достижение!',
+                    message: message,
+                    buttons: [{ type: 'ok' }]
+                });
+            }
+
+            async shareResults() {
+                const user = tg.initDataUnsafe?.user;
+                const message = `🕵️‍♂️ <b>Мой результат в Scam Hunter!</b>\n\n` +
+                               `👤 Игрок: ${user?.first_name || 'Аноним'}\n` +
+                               `🏆 Очки: ${this.playerData.totalScore}\n` +
+                               `📊 Пройдено кейсов: ${this.playerData.completedCases.length}/100\n` +
+                               `🎯 Точность: ${this.playerData.accuracy}%\n\n` +
+                               `🔗 Присоединяйся к игре!`;
+
+                try {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: user?.id || '123456',
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                } catch (error) {
+                    console.log('Ошибка отправки в бота');
+                }
+
+                tg.showPopup({
+                    title: 'Результат отправлен!',
+                    message: 'Ваш результат отправлен в Telegram',
+                    buttons: [{ type: 'ok' }]
+                });
+            }
+
+            openBot() {
+                tg.openTelegramLink('https://t.me/scam_hunter_bot');
+            }
+        }
+
+        // Запуск игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new ScamHunterGame();
+        });
+    </script>
+</body>
+</html>
