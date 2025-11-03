@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Hunter - Детектив Мошенничества</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Экран загрузки -->
+        <div id="loadingScreen" class="screen active">
+            <div class="loading-container">
+                <div class="logo">🕵️‍♂️ Scam Hunter</div>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <div class="loading-text">Загружаем кейсы мошенничества...</div>
+            </div>
+        </div>
+
+        <!-- Главное меню -->
+        <div id="mainMenu" class="screen">
+            <div class="header">
+                <h1>🕵️‍♂️ Scam Hunter</h1>
+                <div class="player-stats">
+                    <div class="stat">🏆 <span id="totalScore">0</span></div>
+                    <div class="stat">📊 <span id="accuracy">0%</span></div>
+                    <div class="stat">🔥 <span id="streak">0</span></div>
+                </div>
+            </div>
+            
+            <div class="menu-content">
+                <div class="player-badge" id="playerBadge">
+                    <span class="badge-icon">🟢</span>
+                    <span class="badge-text">Новичок</span>
+                </div>
+                
+                <div class="menu-buttons">
+                    <button class="btn-primary" onclick="startNewGame()">🎮 Начать игру</button>
+                    <button class="btn-secondary" onclick="showCases()">📚 Библиотека кейсов</button>
+                    <button class="btn-secondary" onclick="showStats()">📊 Статистика</button>
+                    <button class="btn-secondary" onclick="showAchievements()">🏆 Достижения</button>
+                </div>
+                
+                <div class="progress-section">
+                    <h3>Прогресс игры</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">Пройдено: <span id="progressText">0/100</span> кейсов</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран выбора кейса -->
+        <div id="casesScreen" class="screen">
+            <div class="header">
+                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
+                <h2>📚 Библиотека кейсов</h2>
+            </div>
+            <div class="cases-grid" id="casesGrid"></div>
+        </div>
+
+        <!-- Игровой экран -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="case-info">
+                    <h3 id="caseTitle">Загрузка кейса...</h3>
+                    <div class="case-difficulty" id="caseDifficulty"></div>
+                </div>
+                <div class="game-stats">
+                    <div class="score">Очки: <span id="currentScore">0</span></div>
+                    <div class="streak">Серия: <span id="currentStreak">0</span></div>
+                </div>
+            </div>
+            
+            <div class="dialogue-container">
+                <div class="dialogue-message" id="dialogueText"></div>
+                <div class="choices-container" id="choicesContainer"></div>
+            </div>
+            
+            <div class="feedback-container" id="feedbackContainer"></div>
+        </div>
+
+        <!-- Экран статистики -->
+        <div id="statsScreen" class="screen">
+            <div class="header">
+                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
+                <h2>📊 Статистика</h2>
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Общая статистика</h3>
+                    <div class="stat-item">Всего очков: <span id="statTotalScore">0</span></div>
+                    <div class="stat-item">Пройдено кейсов: <span id="statCasesCompleted">0</span></div>
+                    <div class="stat-item">Точность: <span id="statAccuracy">0%</span></div>
+                    <div class="stat-item">Макс. серия: <span id="statMaxStreak">0</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Распределение по сложности</h3>
+                    <div class="stat-item">Новичок: <span id="statBeginner">0</span></div>
+                    <div class="stat-item">Средний: <span id="statIntermediate">0</span></div>
+                    <div class="stat-item">Продвинутый: <span id="statAdvanced">0</span></div>
+                    <div class="stat-item">Эксперт: <span id="statExpert">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран достижений -->
+        <div id="achievementsScreen" class="screen">
+            <div class="header">
+                <button class="btn-back" onclick="showMainMenu()">← Назад</button>
+                <h2>🏆 Достижения</h2>
+            </div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
