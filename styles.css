@@ -1,0 +1,455 @@
+/* Базовые стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    line-height: 1.6;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Экран загрузки */
+#loadingScreen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-container {
+    text-align: center;
+}
+
+.logo {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.loading-progress {
+    height: 100%;
+    background: #4CD964;
+    border-radius: 4px;
+    animation: loading 2s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+}
+
+.loading-text {
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+/* Главное меню */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: white;
+    font-size: 2.2em;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+}
+
+.menu-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.player-badge {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+}
+
+.badge-icon {
+    font-size: 1.5em;
+    margin-right: 10px;
+}
+
+.badge-text {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #495057;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4CD964, #34C759);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 217, 100, 0.4);
+}
+
+.btn-secondary {
+    background: #f8f9fa;
+    color: #495057;
+    border: 2px solid #e9ecef;
+}
+
+.btn-secondary:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+.progress-section {
+    text-align: center;
+}
+
+.progress-section h3 {
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #007AFF, #5856D6);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Экран кейсов */
+.btn-back {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.case-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.case-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.case-card.completed {
+    border: 3px solid #4CD964;
+}
+
+.case-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.case-number {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.case-difficulty {
+    font-size: 0.9em;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.difficulty-beginner { background: #D4EDDA; color: #155724; }
+.difficulty-intermediate { background: #FFF3CD; color: #856404; }
+.difficulty-advanced { background: #F8D7DA; color: #721C24; }
+.difficulty-expert { background: #E2E3E5; color: #383D41; }
+
+/* Игровой экран */
+.game-header {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.case-info h3 {
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.game-stats {
+    text-align: right;
+}
+
+.score, .streak {
+    font-weight: bold;
+    color: #495057;
+}
+
+.dialogue-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dialogue-message {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    color: #495057;
+}
+
+.choices-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.choice-btn {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1em;
+    color: #495057;
+}
+
+.choice-btn:hover {
+    background: #e9ecef;
+    border-color: #007AFF;
+}
+
+.feedback-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+
+.feedback-container.show {
+    display: block;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-correct {
+    border-left: 5px solid #4CD964;
+    background: #D4EDDA;
+}
+
+.feedback-partial {
+    border-left: 5px solid #FFCC00;
+    background: #FFF3CD;
+}
+
+.feedback-incorrect {
+    border-left: 5px solid #FF3B30;
+    background: #F8D7DA;
+}
+
+.feedback-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feedback-text {
+    line-height: 1.5;
+}
+
+/* Экран статистики и достижений */
+.stats-container, .achievements-grid {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    margin-bottom: 25px;
+}
+
+.stat-card h3 {
+    margin-bottom: 15px;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 8px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.achievement-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 2px solid #e9ecef;
+}
+
+.achievement-card.unlocked {
+    border-color: #4CD964;
+    background: #D4EDDA;
+}
+
+.achievement-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.achievement-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.achievement-desc {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .screen {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .player-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cases-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .game-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
