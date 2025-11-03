@@ -5,643 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scam Hunter - Детектив Мошенничества</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* БАЗОВЫЕ СТИЛИ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-        }
-
-        .screen {
-            display: none;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* ЭКРАН ЗАГРУЗКИ */
-        #loadingScreen {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .loading-content {
-            text-align: center;
-        }
-
-        .loader-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .game-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .loading-subtitle {
-            margin-bottom: 2rem;
-            opacity: 0.8;
-        }
-
-        .progress-bar {
-            width: 200px;
-            height: 6px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #4CD964;
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        /* ГЛАВНОЕ МЕНЮ */
-        .menu-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .main-title {
-            color: white;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            color: rgba(255,255,255,0.8);
-            font-size: 1.1rem;
-        }
-
-        .user-info {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 15px;
-            border-radius: 20px;
-            margin-top: 15px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-        }
-
-        .menu-content {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px 15px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .player-badge {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 50px;
-            padding: 12px 25px;
-            text-align: center;
-            margin: 0 auto 25px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge-emoji {
-            font-size: 1.3rem;
-        }
-
-        .badge-text {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #4CD964, #34C759);
-            color: white;
-            box-shadow: 0 4px 15px rgba(76, 217, 100, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 8px rgba(76, 217, 100, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e9ecef;
-        }
-
-        .btn-secondary:active {
-            background: #e9ecef;
-            transform: translateY(1px);
-        }
-
-        .btn-icon {
-            font-size: 1.2rem;
-        }
-
-        .progress-section {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .progress-text {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .progress-bar.large {
-            width: 100%;
-            height: 8px;
-            background: #e9ecef;
-        }
-
-        .telegram-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-telegram {
-            background: #0088cc;
-            color: white;
-            border: none;
-        }
-
-        .btn-telegram:active {
-            background: #0077b3;
-            transform: translateY(1px);
-        }
-
-        /* ЭКРАН КЕЙСОВ */
-        .screen-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 1.3rem;
-            padding: 10px 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-right: 15px;
-        }
-
-        .back-btn:active {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .screen-title {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .cases-container {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .cases-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .case-item {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .case-item:active {
-            transform: scale(0.95);
-        }
-
-        .case-item.completed {
-            border-color: #4CD964;
-            background: #d4edda;
-        }
-
-        .case-item.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .case-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .case-difficulty {
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        .difficulty-beginner { background: #d4edda; color: #155724; }
-        .difficulty-intermediate { background: #fff3cd; color: #856404; }
-        .difficulty-advanced { background: #f8d7da; color: #721c24; }
-        .difficulty-expert { background: #e2e3e5; color: #383d41; }
-
-        /* ИГРОВОЙ ЭКРАН */
-        .game-header {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .case-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .back-btn.small {
-            padding: 8px 12px;
-            font-size: 1.1rem;
-        }
-
-        .case-info {
-            flex: 1;
-        }
-
-        .case-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .case-meta {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .difficulty-badge {
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .case-number {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .game-stats {
-            text-align: right;
-        }
-
-        .game-stat {
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 2px;
-        }
-
-        .game-content {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .dialogue-card {
-            margin-bottom: 20px;
-        }
-
-        .message-text {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .choices-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .choice-btn {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            color: #333;
-            line-height: 1.4;
-        }
-
-        .choice-btn:active {
-            background: #e9ecef;
-            transform: scale(0.98);
-        }
-
-        .feedback-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .feedback-card.show {
-            display: block;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feedback-content.correct {
-            border-left: 4px solid #4CD964;
-        }
-
-        .feedback-content.partial {
-            border-left: 4px solid #FFCC00;
-        }
-
-        .feedback-content.incorrect {
-            border-left: 4px solid #FF3B30;
-        }
-
-        .feedback-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .feedback-icon {
-            font-size: 1.2rem;
-        }
-
-        .feedback-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .feedback-text {
-            line-height: 1.5;
-            color: #333;
-        }
-
-        /* ЭКРАН СТАТИСТИКИ */
-        .stats-container {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .stats-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .stat-section {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 8px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-
-        .stat-name {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            color: #666;
-            font-weight: 600;
-        }
-
-        /* ЭКРАН ДОСТИЖЕНИЙ */
-        .achievements-container {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .achievements-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .achievement-item {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .achievement-item.unlocked {
-            border-color: #4CD964;
-            background: #d4edda;
-        }
-
-        .achievement-icon {
-            font-size: 2rem;
-        }
-
-        .achievement-info {
-            flex: 1;
-        }
-
-        .achievement-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #333;
-        }
-
-        .achievement-desc {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .achievement-status {
-            font-size: 1.5rem;
-        }
-
-        /* АДАПТИВНОСТЬ */
-        @media (max-width: 768px) {
-            .cases-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stats-cards {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .game-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cases-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
@@ -651,7 +15,7 @@
                 <div class="loader">
                     <div class="loader-icon">🕵️‍♂️</div>
                     <h1 class="game-title">Scam Hunter</h1>
-                    <p class="loading-subtitle">Загружаем кейсы мошенничества...</p>
+                    <p class="loading-subtitle">Инициализация игры...</p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="loadingProgress"></div>
                     </div>
@@ -662,12 +26,10 @@
         <!-- Главное меню -->
         <div id="mainMenu" class="screen">
             <div class="menu-header">
-                <div class="header-content">
-                    <h1 class="main-title">🕵️‍♂️ Scam Hunter</h1>
-                    <p class="subtitle">Стань детективом мошенничества</p>
-                    <div class="user-info" id="userInfo">
-                        Загрузка профиля...
-                    </div>
+                <h1 class="main-title">🕵️‍♂️ Scam Hunter</h1>
+                <p class="subtitle">Стань детективом мошенничества</p>
+                <div class="user-info" id="userInfo">
+                    <!-- Информация о пользователе -->
                 </div>
             </div>
 
@@ -696,25 +58,25 @@
                     </div>
                 </div>
 
-                <div class="player-badge">
+                <div class="player-badge" id="playerBadge">
                     <span class="badge-emoji">🟢</span>
                     <span class="badge-text">Новичок</span>
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="startGame()">
+                    <button class="btn btn-primary" id="startGameBtn">
                         <span class="btn-icon">🎮</span>
                         Начать игру
                     </button>
-                    <button class="btn btn-secondary" onclick="showScreen('casesScreen')">
+                    <button class="btn btn-secondary" id="casesBtn">
                         <span class="btn-icon">📚</span>
                         Библиотека кейсов
                     </button>
-                    <button class="btn btn-secondary" onclick="showScreen('statsScreen')">
+                    <button class="btn btn-secondary" id="statsBtn">
                         <span class="btn-icon">📊</span>
                         Статистика
                     </button>
-                    <button class="btn btn-secondary" onclick="showScreen('achievementsScreen')">
+                    <button class="btn btn-secondary" id="achievementsBtn">
                         <span class="btn-icon">🏆</span>
                         Достижения
                     </button>
@@ -726,16 +88,16 @@
                         <span class="progress-text" id="progressText">0/100</span>
                     </div>
                     <div class="progress-bar large">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-fill" id="progressFill"></div>
                     </div>
                 </div>
 
                 <div class="telegram-actions">
-                    <button class="btn btn-telegram" onclick="shareResults()">
+                    <button class="btn btn-telegram" id="shareBtn">
                         <span class="btn-icon">📤</span>
                         Поделиться результатом
                     </button>
-                    <button class="btn btn-telegram" onclick="openBot()">
+                    <button class="btn btn-telegram" id="botBtn">
                         <span class="btn-icon">🤖</span>
                         Написать боту
                     </button>
@@ -743,9 +105,145 @@
             </div>
         </div>
 
-        <!-- Остальные экраны... -->
-        <!-- (код остальных экранов такой же как в предыдущем варианте, но встроенный в стили) -->
+        <!-- Экран кейсов -->
+        <div id="casesScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" id="backFromCasesBtn">
+                    <span>← Назад</span>
+                </button>
+                <h2 class="screen-title">📚 Библиотека кейсов</h2>
+                <div class="header-spacer"></div>
+            </div>
+            <div class="cases-container">
+                <div class="cases-grid" id="casesGrid">
+                    <!-- Кейсы будут здесь -->
+                </div>
+            </div>
+        </div>
 
+        <!-- Игровой экран -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="case-header">
+                    <button class="back-btn small" id="backFromGameBtn">
+                        <span>←</span>
+                    </button>
+                    <div class="case-info">
+                        <h3 class="case-title" id="caseTitle">Загрузка кейса...</h3>
+                        <div class="case-meta">
+                            <span class="difficulty-badge" id="caseDifficulty">Новичок</span>
+                            <span class="case-number" id="caseNumber">#1</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <span class="stat-label">Очки:</span>
+                        <span class="stat-value" id="currentScore">0</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-label">Серия:</span>
+                        <span class="stat-value" id="currentStreak">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="dialogue-card">
+                    <div class="message-content">
+                        <div class="message-text" id="dialogueText">
+                            Загрузка диалога...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="choices-container" id="choicesContainer">
+                    <!-- Варианты ответов будут здесь -->
+                </div>
+
+                <div class="feedback-card hidden" id="feedbackContainer">
+                    <div class="feedback-content" id="feedbackContent">
+                        <div class="feedback-header">
+                            <span class="feedback-icon" id="feedbackIcon">💡</span>
+                            <span class="feedback-title" id="feedbackTitle">Результат</span>
+                        </div>
+                        <div class="feedback-text" id="feedbackText">
+                            Обратная связь появится здесь...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран статистики -->
+        <div id="statsScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" id="backFromStatsBtn">
+                    <span>← Назад</span>
+                </button>
+                <h2 class="screen-title">📊 Статистика</h2>
+                <div class="header-spacer"></div>
+            </div>
+            <div class="stats-container">
+                <div class="stats-grid">
+                    <div class="stat-section">
+                        <h3 class="section-title">Общая статистика</h3>
+                        <div class="stat-item">
+                            <span class="stat-name">Всего очков</span>
+                            <span class="stat-value" id="statTotalScore">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Пройдено кейсов</span>
+                            <span class="stat-value" id="statCasesCompleted">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Точность ответов</span>
+                            <span class="stat-value" id="statAccuracy">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">Макс. серия</span>
+                            <span class="stat-value" id="statMaxStreak">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-section">
+                        <h3 class="section-title">По сложности</h3>
+                        <div class="stat-item">
+                            <span class="stat-name">🟢 Новичок</span>
+                            <span class="stat-value" id="statBeginner">0/20</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🟡 Средний</span>
+                            <span class="stat-value" id="statIntermediate">0/30</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🔴 Продвинутый</span>
+                            <span class="stat-value" id="statAdvanced">0/30</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-name">🟣 Эксперт</span>
+                            <span class="stat-value" id="statExpert">0/20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран достижений -->
+        <div id="achievementsScreen" class="screen">
+            <div class="screen-header">
+                <button class="back-btn" id="backFromAchievementsBtn">
+                    <span>← Назад</span>
+                </button>
+                <h2 class="screen-title">🏆 Достижения</h2>
+                <div class="header-spacer"></div>
+            </div>
+            <div class="achievements-container">
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Достижения будут здесь -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="game.js"></script>
