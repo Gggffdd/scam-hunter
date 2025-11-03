@@ -400,4 +400,86 @@ class ScamHunterGame {
         const message = `🕵️‍♂️ <b>Мой результат в Scam Hunter!</b>\n\n` +
                        `👤 Игрок: ${user?.first_name || 'Аноним'}\n` +
                        `🏆 Очки: ${this.playerData.totalScore}\n` +
-                       `📊 Пройдено кейсов: ${this.playerData.completedCases.length}/
+                       `📊 Пройдено кейсов: ${this.playerData.completedCases.length}/100\n` +
+                       `🎯 Точность: ${this.playerData.accuracy}%\n\n` +
+                       `🔗 Присоединяйся к игре!`;
+        
+        // Пытаемся отправить через бота
+        try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: user?.id || '123456',
+                    text: message,
+                    parse_mode: 'HTML'
+                })
+            });
+        } catch (error) {
+            console.log('Ошибка отправки, но игра продолжает работать');
+        }
+
+        tg.showPopup({
+            title: 'Результат отправлен!',
+            message: 'Ваш результат отправлен в Telegram',
+            buttons: [{ type: 'ok' }]
+        });
+    }
+
+    openBot() {
+        tg.openTelegramLink('https://t.me/scam_hunter_bot');
+    }
+}
+
+// Глобальные функции
+let game;
+
+function startGame() {
+    const availableCases = game.cases.filter(caseItem => 
+        !game.playerData.completedCases.includes(caseItem.id)
+    );
+    
+    if (availableCases.length > 0) {
+        game.startCase(availableCases[0]);
+    } else {
+        tg.showPopup({
+            title: 'Поздравляем! 🎉',
+            message: 'Вы прошли все кейсы!',
+            buttons: [{ type: 'ok' }]
+        });
+    }
+}
+
+function showScreen(screenId) {
+    switch(screenId) {
+        case 'mainMenu':
+            game.showMainMenu();
+            break;
+        case 'casesScreen':
+            game.showCasesScreen();
+            break;
+        case 'statsScreen':
+            game.showStatsScreen();
+            break;
+        case 'achievementsScreen':
+            game.showAchievementsScreen();
+            break;
+        default:
+            game.showScreen(screenId);
+    }
+}
+
+function shareResults() {
+    game.shareResults();
+}
+
+function openBot() {
+    game.openBot();
+}
+
+// Запуск игры
+document.addEventListener('DOMContentLoaded', () => {
+    game = new ScamHunterGame();
+});
